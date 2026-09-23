@@ -1,0 +1,43 @@
+# =============================================================================
+# creator_to_team.yaml — maps an Asana user to their team prefix.
+#
+# Used by decision-tree step 3: a new field with no concept match, created by
+# someone whose team is known, is suggested as "[TEAM]-[Field]".
+#
+# Keyed by Asana user GID (stable; survives display-name changes). The name is
+# a comment for human readability only. Seeded from who created which prefixed
+# fields in the 2026-06-16 inventory + spec examples.
+#
+# >>> Alex, confirm the two flagged ambiguous ones. <<<
+# Anyone not listed here falls through to "triage required" rather than getting
+# a wrong-team rename suggestion — safe default.
+# =============================================================================
+
+by_gid:
+  "8397381398802227": HR        # Dana Whitfield
+  "205980619624491":  BIZOPS    # Priya Raman
+  "6249289124956664": RTL       # Theo Brandt
+  "9193883021837429": BIZOPS    # Nina Alvarez  (also makes PD- workspace fields; team = BIZOPS per spec)
+  "2933828384313077": WS        # Marco Delgado
+  "196765774221528":  BIZOPS    # Sam Okafor    (confirmed by spec project example)
+  "4766559332067162": PRD       # Elliot Hayes
+  "1434924069037136": MKTG      # Robin Vance (also makes PD- workspace fields; team = MKTG)
+  "3167696064121743": MFG       # Ivan Petrov (also makes PD- workspace fields; team = MFG)
+  "5963389150918617": "M&A"     # Dale Whitmore
+  "1532418854210086": WS        # Carmen Ortiz
+  "6093156159526063": PRD       # Grant Ellis  (confirmed by Alex)
+  "9533868620643363": WS        # Noah Briggs    (confirmed by Alex)
+  "6680172517175385": WS        # Ana Sorel   (confirmed by Alex)
+
+  # --- Added 2026-06-19 (owners behind the ?TEAM stale-project tasks) ---
+  "6251171444815541": MKTG      # Chris Danner
+  "1557207357558185": WS        # Owen Pratt
+  "6274089174140111": RTL       # Maya Lindgren
+  "1446661122644500": MKTG      # Diego Salas
+  "2991331420035788": MKTG      # Leo Marchetti
+  "6013987971094448": WS        # Rosa Villanueva
+  "2199532218291915": MKTG      # Willa Tan
+
+  # --- Governance / automation accounts (not a delivery team) ---
+  "4775268907111830": PD        # Alex Rivera — governance owner
+  "5870064036505252": PD        # Template Naming Prefix Automation — service account

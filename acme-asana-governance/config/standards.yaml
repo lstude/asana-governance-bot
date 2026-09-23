@@ -1,0 +1,181 @@
+# =============================================================================
+# standards.yaml — machine-readable mirror of the Notion governance doc.
+#
+# This is the single source of truth the checkers read. When the Notion doc
+# changes (new team prefix, new approved alias, new project TYPE), update this
+# file in the same commit so the two stay in lockstep.
+#
+# Sprint 1 uses: field_prefixes, alias_map, governance.
+# project_naming / portfolio_naming / template_naming are mirrored here now so
+# Sprints 2–3 have them ready, but no Sprint-1 code reads them yet.
+# =============================================================================
+
+field_prefixes:
+  workspace: PD
+  teams:
+    BIZOPS: Business Operations
+    NPI:    New Product Introduction
+    MFG:    Manufacturing
+    PRD:    Product
+    MKTG:   Marketing
+    WS:     Wholesale
+    RTL:    Retail
+    HR:     People / HR
+    "M&A":  Mergers & Acquisitions
+    CS:     Customer Service
+    ESI:    Environmental Social Impact
+    FIN:    Finance
+    VM:     Visual Merchandising
+
+# -----------------------------------------------------------------------------
+# alias_map — the curated "concept match" table (decision-tree steps 1 & 2).
+#
+# Keys are NORMALIZED field names (lowercased, trimmed, internal whitespace
+# collapsed to one space). Values are the canonical standard to point people at.
+# If a new user-created field normalizes to a key here, the suggestion is
+# "delete this, use <canonical> instead."
+#
+# Workspace (PD-) standards win over team standards by design: when a concept is
+# governed workspace-wide, everyone should use the PD- field. Seeded from the
+# real unprefixed duplicates found in the cleanup CSVs; extend as gaps surface.
+# -----------------------------------------------------------------------------
+alias_map:
+  # PD-Priority
+  "priority":            PD-Priority
+  "priority level":      PD-Priority
+  "prio":                PD-Priority
+  "prioriteit":          PD-Priority          # NL dup seen in workspace
+  "priority rank":       PD-Priority
+  # PD-Status
+  "status":              PD-Status
+  "task status":         PD-Status
+  "project status":      PD-Status
+  # PD-Notes
+  "notes":               PD-Notes
+  "note":                PD-Notes
+  # PD-Owner
+  "owner":               PD-Owner
+  "task owner":          PD-Owner
+  "project owner":       PD-Owner
+  # PD-Team
+  "team":                PD-Team
+  "teams":               PD-Team
+  "team(s)":             PD-Team
+  # PD-DRI
+  "dri":                 PD-DRI
+  "pd dri":              PD-DRI
+  "responsible":         PD-DRI
+  # PD-Effort
+  "effort":              PD-Effort
+  "workload":            PD-Effort
+  "level of effort":     PD-Effort
+  # PD-OKD Status
+  "okd status":          PD-OKD Status
+  "okey dokeys":         PD-OKD Status
+  "okey-dokeys":         PD-OKD Status
+  "2025 pd okey-dokeys": PD-OKD Status
+  # PD-Launch Year
+  "launch year":         PD-Launch Year
+  # PD-Blocked Reason
+  "blocked reason":      PD-Blocked Reason
+  "blocker":             PD-Blocked Reason
+
+# The 10 PD- workspace standards (the set the Notion PD-SET table documents).
+# Used to recognise an already-compliant PD- field and to render the library.
+# Project counts are read live from the inventory, never hard-coded here.
+pd_standards:
+  - PD-Priority
+  - PD-Status
+  - PD-Notes
+  - PD-Owner
+  - PD-Team
+  - PD-DRI
+  - PD-Effort
+  - PD-OKD Status
+  - PD-Launch Year
+  - PD-Blocked Reason
+
+governance:
+  # Decision #8: N+ same-named new project-scoped fields by one creator in a
+  # week collapses into a single "template propagation" item.
+  template_propagation_threshold: 5
+  # Field names to ignore entirely. Two uses:
+  #   - a template was fixed at source, so leftover clones age out (Grouping)
+  #   - an Asana-created field that CANNOT be renamed (Percent allocation is
+  #     Asana-locked: the API returns asana_created_custom_fields_cannot_be_edited)
+  # Normalized (case/space-insensitive) match. Ignored fields also auto-resolve
+  # any open task they had.
+  ignore_field_names: [Grouping, Percent allocation]
+  # Decision #7: open cleanup tasks older than this get an aging flag.
+  aging_days: 30
+  # Post a friendly nudge comment on still-open governance tasks older than this.
+  nudge_after_days: 14
+  # Projects with no activity in this many days are "stale" (archive candidates).
+  stale_project_days: 180
+  # Days out for the auto-created cleanup task's due date.
+  task_due_days: 7
+  # PD-Priority on cleanup tasks:
+  #   "auto"     = script stamps a priority by issue impact (map below)
+  #   "michelle" = leave PD-Priority blank; Robin sets it during triage
+  priority_mode: auto
+  # Impact map used when priority_mode = auto. Values must match PD-Priority's
+  # options (Low | Medium | High | Urgent). Tune freely.
+  # When a person has this many or more of their OWN fields to fix in one run,
+  # bundle them under a single parent task with one subtask each (instead of N
+  # separate top-level tasks flooding their My Tasks). 1 item → a plain task.
+  batch_threshold: 2
+  batch_task_title: "Update recent Asana adds to match standards"
+  priority_by_category:
+    template_propagation: High     # systemic — one fix prevents recurring dupes
+    use_existing:         Medium   # a real duplicate of a workspace standard
+    rename:               Medium   # unprefixed field; library hygiene
+    triage:               Low      # needs a human look, rarely urgent
+    template_fork:        Medium
+    template_reformat:    Low
+    template_triage:      Low
+    portfolio_reformat:   Low
+    project_misnamed:     Low
+
+# -----------------------------------------------------------------------------
+# Below: mirrored for later sprints. No Sprint-1 code reads these yet.
+# -----------------------------------------------------------------------------
+project_naming:
+  # Projects use regular hyphens (not en-dashes), per the governance doc.
+  format: "[TEAM] - [TYPE] - [Subject] - [Date or version]"
+  # Per the governance doc's project-prefix list (BIZOPS folds in Tech/IT/CS/supply
+  # chain; NPI/M&A/VM/ESI added). MFG/CS are not standalone project prefixes.
+  teams:  [MKTG, BIZOPS, WS, RTL, PRD, FIN, HR, VM, ESI, NPI, "M&A"]
+  types:  [LAUNCH, SPRINT, CAMPAIGN, EVENT, ONBOARD, REVIEW, INITIATIVE, "1:1", TRADESHOW]
+  # YYYY, YYYY-MM, or a version like v2 (doc: "YYYY-MM or YYYY for dates; vN for versions").
+  date_pattern: '^(\d{4}(-\d{2})?|v\d+)$'
+  forbidden_in_name: [WIP, DRAFT, TEST, DELETE]
+
+portfolio_naming:
+  # Portfolios use regular hyphens (not en-dashes), per the governance doc.
+  format: "[SCOPE] - [Subject] - [Time bound]"
+  # XFN (not X-FN — the hyphen clashed with the separator), per Alex. Adopted
+  # going forward; existing tasks aren't retro-changed.
+  scopes: [PD, XFN, PROG, PERSONAL]   # plus any team prefix above
+  # Time bound: YYYY-MM, YYYY, or QN-YYYY (e.g. Q4-2026); omit if evergreen.
+  # The updated governance doc (2026-06-18) defines portfolio NAMING only — it no
+  # longer lists required metadata (sunset date / inclusion criteria / description).
+  # So the checker enforces naming only; metadata checks stay dormant (empty list).
+  # If metadata requirements return, add keys here and wire cf: names in checkers/portfolios.py.
+  metadata_enforced: []
+
+template_naming:
+  # Doc (2026-06-19) standardised templates on regular hyphens too — the en-dash
+  # exception is gone. All entity types now use "-". (The checker normalises dash
+  # types when matching, so live templates still using en-dashes still match.)
+  format: "[TEMPLATE] - [PD or TEAM] - Subject"
+  # Mirrors the governance doc's approved list verbatim.
+  approved_pd:
+    - "[TEMPLATE] - [PD] - NPI Launch"
+    - "[TEMPLATE] - [PD] - Campaign"
+    - "[TEMPLATE] - [PD] - Event / Tradeshow"
+    - "[TEMPLATE] - [PD] - Retail Store Opening"
+    - "[TEMPLATE] - [PD] - Employee Onboarding"
+    - "[TEMPLATE] - [PD] - Partner Onboarding"
+    - "[TEMPLATE] - [PD] - Recurring Operational"
+    - "[TEMPLATE] - [PD] - 1:1"
+    - "[TEMPLATE] - [PD] - Generic Project"
